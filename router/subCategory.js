@@ -1,7 +1,7 @@
 
 const express = require('express');
 
-const route = express.Router({mergeParams: true}); //allow us => categories to access subCategories . 
+const route = express.Router({ mergeParams: true}); //allow us => categories to access subCategories . 
 
 const asyncHandler = require('express-async-handler') 
 

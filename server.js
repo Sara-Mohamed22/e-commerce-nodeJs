@@ -11,6 +11,8 @@ const bodyParser = require('body-parser');
 const categoryRoute = require('./router/category');
 const subCategoryRoute = require('./router/subCategory');
 const brandRoute = require('./router/brandRoute');
+const productRoute = require('./router/prouduct');
+
 
 
 
@@ -41,6 +43,8 @@ app.use('/api/v1/categories', categoryRoute );
 app.use('/api/v1/subCategories', subCategoryRoute );
 app.use('/api/v1/categories/:categoryId/subCategories', subCategoryRoute );
 app.use('/api/v1/brands', brandRoute );
+app.use('/api/v1/products', productRoute );
+
 
 
 
@@ -79,18 +83,20 @@ mongoose.connect( process.env.DB_URL ).then((data)=> {
 
 process.on('unhandledRejection' , (error)=>{
 
-  console.error(`UnhandledRejection error :  ${error.name} | ${error.message } `);
-   serv.close(()=>{
+  // console.error(`UnhandledRejection error :  ${error.name} | ${error.message } `);
+  /* serv.close(()=>{
 
   console.log('server shut down ');
 
   // close server to close requests then close app 
   process.exit(); // to exit from application or close mode application
 
-});
+});*/
 
 
 });
+
+
 
 
 /*

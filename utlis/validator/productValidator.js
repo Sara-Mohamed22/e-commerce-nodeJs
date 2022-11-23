@@ -1,13 +1,24 @@
-const check = require('express-validator');
+const {check} = require('express-validator');
+const slugify = require('slugify');
 const validatorMidleware = require('../../middleware/validatorMidleware');
+const ApiError = require('../apiError');
+
+const Category = require("../../model/category");
+const SubCategory = require("../../model/subCategoryModel");
 
 
 exports.createProduct = [ 
-    check('title').isLength({min:3 }).withMessage('Title must be at least 3 characters').
-    notEmpty().withMessage('Enter a title') ,
+    check('title').
+    notEmpty().withMessage('Enter a title').
+    isLength({min:3 }).withMessage('Title must be at least 3 characters').
+    custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }) ,
 
-    check('description').isLength({max : 200 }).withMessage('Description must be at least').
-    notEmpty().withMessage('Enter a description'),
+    check('description').
+    notEmpty().withMessage('Enter a description')
+    .isLength({max : 2000 }).withMessage('Description must be at least'),
 
     check('quantity').notEmpty().withMessage('Product quantity is required').
     isNumeric().withMessage('Product quantity must be a number'),
@@ -20,12 +31,13 @@ exports.createProduct = [
     check('sold').optional().isNumeric().withMessage('Product quantity must be a number'),
 
 
-    check('priceAfterDiscount').optional().toFloat().isNumeric()
-    .withMessage('Product priceAfterDiscount must be a number').
-    custom((value , req )=>{
-        if(req.body.price <= value ) throw new Error(' priceAfterDiscount must be lower than price ...')
-
-        return true ;
+    check('priceAfterDiscount').optional().isNumeric()
+    .withMessage('Product priceAfterDiscount must be a number').toFloat().
+    custom((value, { req }) => {
+      if (req.body.price <= value) {
+        throw new Error('priceAfterDiscount must be lower than price');
+      }
+      return true;
     }),
 
 
@@ -35,15 +47,66 @@ exports.createProduct = [
 
     check('images').optional().isArray().withMessage('images must be an array'),
 
+   
 
-    check('category').notEmpty().withMessage('enter category..')
-    .isMongoId().withMessage('Invalid Id category '),
+    check('category').notEmpty().withMessage('enter category..').isMongoId().
+    withMessage('Invalid Id category ').custom( async (categoryId) =>{
+      console.log(`kkk ${categoryId}`);
+
+      await Category.findById(categoryId).then((value)=> {
+        console.log(value);
+
+        if(!value) {
+          console.log('yyy')
+          return Promise.reject(new Error(`No Category found with id ${  categoryId}`));
+        }
+      });
+    })
+
+    ,
+
 
 
     check('brand').optional().isMongoId().withMessage('Invalid Id brand '),
 
 
-    check('subCategory').optional().isMongoId().withMessage('Invalid Id subcategory'),
+    check('subCategory').optional().isMongoId().withMessage('Invalid Id subcategory').
+    custom( async(subCategoriesIDS)=>{
+
+      //finad all subCategories have id and check subCategories come from postman.
+      // subCategories exist in database but not
+       await SubCategory.find({ _id: {$exists: true , $in: subCategoriesIDS}}).then((results)=>{
+            console.log(`lenggg${ results.length}`);
+
+            // eslint-disable-next-line eqeqeq
+            if(results.length === 0 || results.length != subCategoriesIDS.length ) {
+            return Promise.reject(new Error('subCategory not found'));}
+
+          });
+      
+    }).custom( async (val , {req} )=>{
+
+      await  SubCategory.find({category : req.body.category }).then((SubCategories)=>{
+        console.log(`aaaaa ${SubCategories.length}`);
+        const subCategoriesIDDB = [] ;
+        SubCategories.forEach((subCategory)=> {
+          subCategoriesIDDB.push(subCategory._id.toString());
+
+        });
+
+        console.log(`87 ${subCategoriesIDDB}`);
+
+        /// check all subCategories came from body includes subCategories 
+        const checker = val.every((value)=> subCategoriesIDDB.includes(value))
+
+        console.log(checker);
+
+        if(!checker) {
+          return Promise.reject(new Error('This Categories not belong to category'));
+        }
+
+      })
+    }),
 
 
     check('ratingsAverage').isNumeric().withMessage('ratingsAverage must be a number').
@@ -52,7 +115,7 @@ exports.createProduct = [
 
 
 
-    check('ratingsquantity').isNumeric().withMessage('ratingsquantity must be number'),
+    check('ratingsquantity').optional().isNumeric().withMessage('ratingsquantity must be number'),
 
 
 

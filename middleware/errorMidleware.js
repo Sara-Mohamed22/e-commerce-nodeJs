@@ -8,11 +8,13 @@ const globalError = ( error, req , res , next )=>{  //midleware to handle error 
   
      if(process.env.NODE_ENV === "development" )
      {
+        // eslint-disable-next-line no-use-before-define
         sendErrorForDev(error , res );
      }
 
      else
      {
+      // eslint-disable-next-line no-use-before-define
       sendErrorForProduction(error , res );
      }
 

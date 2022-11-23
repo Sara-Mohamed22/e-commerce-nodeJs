@@ -3,14 +3,15 @@ const mongoose = require('mongoose');
 const productSchema = mongoose.Schema({
 
     title : {
-        type: true ,
+        type: String ,
         trim: true ,
         required: true,
         minLength : [3 , "too short product title"] ,
-        maxLength : [10 , "too long Product title"],
+        maxLength : [100 , "too long Product title"],
+        
     },
      slug :{
-        type: true,
+        type: String,
         trim: true,
         lowercase : true,
 
@@ -37,12 +38,11 @@ const productSchema = mongoose.Schema({
         type: Number,
          required :[true, "Product price is Required"],
          trim:true,
-         min: [2, "too short product price"],
+         max: [20000, "too long product price"],
      },
 
      priceAfterDiscount:{
         type: Number,
-      
      },
 
      imageCover: {
@@ -52,6 +52,8 @@ const productSchema = mongoose.Schema({
      },
      colors: [String], // array of colors
      images :[String] ,
+
+   
      category : {
         type : mongoose.Schema.ObjectId ,
         ref : 'Category',
