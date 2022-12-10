@@ -73,8 +73,6 @@ exports.createProduct = [
     check('subCategory').optional().isMongoId().withMessage('Invalid Id subcategory').
     custom( async(subCategoriesIDS)=>{
 
-      //finad all subCategories have id and check subCategories come from postman.
-      // subCategories exist in database but not
        await SubCategory.find({ _id: {$exists: true , $in: subCategoriesIDS}}).then((results)=>{
             console.log(`lenggg${ results.length}`);
 
@@ -96,7 +94,6 @@ exports.createProduct = [
 
         console.log(`87 ${subCategoriesIDDB}`);
 
-        /// check all subCategories came from body includes subCategories 
         const checker = val.every((value)=> subCategoriesIDDB.includes(value))
 
         console.log(checker);

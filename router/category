@@ -27,14 +27,11 @@ const route = express.Router();
 
 /// pagination not show all items .. show specific items .
 route.get('/'  , asyncHandler( async (req,res , next)=>{
-    /*  as a server => have 1 page with 5 element */
 
 
-    const page = req.query.page * 1  ||  1;  ///req.query.page = string =. هضربها *1 عشان تتحول لرقم 
+    const page = req.query.page * 1  ||  1;  
     const limit = req.query.limit * 1 || 2;
-    const skip = (page-1)*limit ; //العناصر اللي هتظهر فى البيدج اللي بعدها 
-    //(2-1)*5 = 5 هعمل skip لاول 5 عناصر واجيب اللي بعدها 
-
+    const skip = (page-1)*limit ; 
    
   const categories = await Category.find({}).skip(skip).limit(limit) ; 
   if(!categories)
@@ -57,9 +54,7 @@ route.get('/'  , asyncHandler( async (req,res , next)=>{
 
 
 
-// @create category 
-// @route => post   api/v1/category
-//@access => private 
+ 
 route.post('/' , createValidator , asyncHandler( async (req,res )=>{
 
     
@@ -93,9 +88,7 @@ asyncHandler( async (req,res , next )=>{
 
     if(!singleCategory)
     {
-        // res.status(404).json({
-        //     msg :'No Category found!'
-        // });
+       
 
        return next(new ApiError(`No Category found! ${req.params.id}` , 404)); // send error to midleware.
     }
@@ -107,40 +100,7 @@ asyncHandler( async (req,res , next )=>{
     });
 })); 
 
-///  api/v1/categories/63678d887c019b9071961260
-/*
-route.get('/:id' ,  (req,res)=>{   
 
-    console.log('444444');
-    console.log(`rrrrrrrr ${req.params.id}` );
-   
-
-
-      Category.findById(req.params.id).then((singleCategory)=>{
-
-        if(!singleCategory)
-        {
-            res.status(404).json({
-                msg :'No Category found!'
-            });
-        }
-    
-        res.status(200).json({
-            msg : 'success' ,
-            data: singleCategory
-    
-        });
-
-
-      }).catch((e)=>{
-        console.log(e.toString());
-      });
-
-  
-});*/
-
-
-///////////////// update category
 
 route.put('/:id' , updateCategoryValidator ,asyncHandler(async (req,res , next)=>{
    const {id} = req.params ;
@@ -152,16 +112,11 @@ route.put('/:id' , updateCategoryValidator ,asyncHandler(async (req,res , next)=
       { name ,
         slug : slugify(slug) 
         } ,
-      {new:true });  // findOneAndUpdate == take id , edit , some option 
-     // new => return data after update 
+      {new:true });   
 
      if(!category)
      {
-      //  res.status(404).json({
-      //   msg : 'updated failed , try again' ,
-      //   data: category
-      //  });
-
+    
       return next(new ApiError( 'updated failed , try again', 400)) ;
      }
 
@@ -187,13 +142,12 @@ const category = await Category.findByIdAndDelete(req.params.id);
 
 if(!category)
 {
-    // res.status(404).json({ msg : 'no found category!' });
-    return next(new ApiError( `no found category ${req.params.id} ! `, 400)) ; // return mean == stop error and complete.
+    return next(new ApiError( `no found category ${req.params.id} ! `, 400)) ;
 
 }
 
 
-  res.status(204).json({    //204 == delete 
+  res.status(204).json({    
     msg : 'delete successfully ' ,
     data : category
   });
@@ -204,17 +158,3 @@ if(!category)
 module.exports = route ;
 
 
-/*
- try {} catch(e) == hold error
- then == hold error
- asyncHandler => express handle error ..
-
- html error in postman => convert to json error use app.use( error , req , res , next ) // 4 paramter express بيفهم انها ميديل وير 
- to handle error ..
- express اما اديها 4 برامتير بتفهم انى عاوزة handle error .
-
-
- when use validator 
-  route.method('/' , validator , midleware for validator , اللي هيحص بقي اما اروح ع الurl )
-
-*/

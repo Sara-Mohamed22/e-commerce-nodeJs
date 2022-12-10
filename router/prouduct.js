@@ -51,34 +51,85 @@ route.get('/' , asyncHandler(async  (req,res,next) =>{
    console.log(queryStringObj);
 
   let queryStri = JSON.stringify(queryStringObj);
-  queryStri = queryStri.replace(/\b(gtl|gt|lt|lte)\b/g , match => `$${match}`);
+  queryStri = queryStri.replace(/\b(gte|gt|lt|lte)\b/g , match => `$${match}`);
 
-
+   console.log(JSON.parse(queryStri));
 
     // pagination 
     const page = req.query.page *1 || 1 ;
     const limit = req.query.limit *1 || 5 ;
     const skip = (page-1)* limit ; 
 
-   //  filtering with greater than && lower than 
-    //  { price : {$gte:50 } , ratingsAverage : {$lte :50} }
-    //  { price: { gte: '50' }, ratingsAverage: { gte: '5' } }
-    //   gte === greater than or equal
+  
 
 
-  /*  const products = await Product.find({}).where('price').equals(req.query.price).  // filteration with mongoose 
-    where("ratingsAverage").equals(req.query.ratingsAverage)*/
-    const products = await Product.find(queryStringObj) // use filteration 
+  
+
+ 
+
+    let products = await Product.find(JSON.parse(queryStri)) // use filteration 
     // const products = await Product.find({})
     .skip(skip).limit(limit).populate( { path: "category" , select : "name -_id"});
-    res.status(200).json({
+
+// sorting === sort
+
+    if(req.query.sort)
+    {
+        const sortStr = req.query.sort.split(',').join(' ');
+
+        console.log(sortStr);
+
+        console.log(req.query.sort);
+       products = await Product.find(JSON.parse(queryStri)) 
+      .skip(skip).limit(limit).populate( { path: "category" , select : "name -_id"}).sort(sortStr);  
+   }
+   else
+   {
+      products = await Product.find(JSON.parse(queryStri)) 
+      .skip(skip).limit(limit).populate( { path: "category" , select : "name -_id"}).sort("-createdAt");
+   }
+  
+
+   if(req.query.fields)
+   {
+      const fieldsStr = req.query.fields.split(',').join(' ');
+
+      console.log(fieldsStr);
+
+      products = await Product.find(JSON.parse(queryStri)) 
+      .skip(skip).limit(limit).populate( { path: "category" , select : "name -_id"}).select(fieldsStr );
+    }
+
+    else
+    {
+        products = await Product.find(JSON.parse(queryStri)) 
+      .skip(skip).limit(limit).populate( { path: "category" , select : "name -_id"}).select("-__v"); 
+    }
+
+    // 5. search 
+    if(req.query.search)
+    {
+        const query = {};
+        query.$or = [ 
+
+            //options => get small , capital 
+             {title: {$regex : req.query.keywords , $options:"i" }} ,  
+             { description: {$regex : req.query.keywords , $options: "i"}}];
+          products = await Product.find().select("-__v");  
+    }
+
+     res.status(200).json({
         result: products.length ,
 
         status : "get successfully!",
         data : products,
         page ,
         limit
-})}));
+})})
+
+
+
+);
 
 
 route.get('/:id' , getProduct , asyncHandler( async (req,res,next) =>{

@@ -1,6 +1,6 @@
 
 
-const { check  } = require('express-validator'); //validator on field before send data 
+const { check  } = require('express-validator'); 
 const validatorMidleware = require('../../middleware/validatorMidleware')
 
 

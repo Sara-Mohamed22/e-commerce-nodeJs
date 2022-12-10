@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 
-// mongoose.Schema({ shap of schema } , { option of schema })
 
 const subCategorySchema = mongoose.Schema({
      name:
@@ -23,7 +22,6 @@ const subCategorySchema = mongoose.Schema({
         },
 
 
-        /// like as forein key in sql 
         category:
         {
             type : mongoose.Schema.ObjectId, 

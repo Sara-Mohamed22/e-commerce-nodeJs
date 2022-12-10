@@ -73,8 +73,7 @@ const productSchema = mongoose.Schema({
 
      }],
 
-//min & max => Number
-// minLength & maxLength => String 
+
 
      ratingsAverage : {
         type: Number,

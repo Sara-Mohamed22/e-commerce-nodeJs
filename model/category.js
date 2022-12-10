@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 
 
-//1. create schema
 const categorySchema = mongoose.Schema({
     name : {
         
@@ -16,7 +15,6 @@ const categorySchema = mongoose.Schema({
     },
 
 
-    // slug => remove space and replace with - == A and b == A-and-b
     slug:
     {
         type : String ,
@@ -27,12 +25,11 @@ const categorySchema = mongoose.Schema({
     
 }, 
 {
-    timestamps : true  // add 2[ createdAt ,updatedAt ] field in database to get الاحدث والاقدم
+    timestamps : true   
 });
 
 
-//2. create model  => convert schema 
 
-module.exports =  mongoose.model("Category" , categorySchema );  // model =>(name of model , schema )
+module.exports =  mongoose.model("Category" , categorySchema );  
 
 

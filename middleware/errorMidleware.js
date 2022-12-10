@@ -48,7 +48,4 @@ const globalError = ( error, req , res , next )=>{  //midleware to handle error 
   module.exports = globalError ;
 
 
-  /*
-   to run server in production mode => package.json => scripts => start:prod : "NODE_ENV=production node server.js"
   
-  */

@@ -1,5 +1,5 @@
 
-const {  validationResult } = require('express-validator'); //validator on field before send data 
+const {  validationResult } = require('express-validator'); 
 
 const validatorMidleware = (req, res , next )=>{
 

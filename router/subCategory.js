@@ -14,7 +14,6 @@ const ApiError = require('../utlis/apiError');
 const { createSubCategory , getSingleSubCategory , updateSubCategory , deleteSubCategory  } = require("../utlis/validator/subCategory-validator")
   
 
-// create subcategory
 
 route.post('/' , (req,res ,next )=>{
 
@@ -59,11 +58,7 @@ route.get('/' , (req,res ,next)=>
   const limit = req.query.limit *1 || 5 ;
   const skip = (page-1) * limit ;
 
-  // let filterObject = {};
-  // if( req.params.categoryId ){ filterObject = { category : req.params.categoryId }; }
-
-
-  // const allSubCategory = await SubCategory.find(filterObject).skip(skip).limit(limit).
+  
   const allSubCategory = await SubCategory.find(req.filterObject).skip(skip).limit(limit).
   populate({path :"category" , select: "name -_id"});
 
